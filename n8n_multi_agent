@@ -1,0 +1,1239 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "myform",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "4f83ddc6-336e-4fa0-98fc-f4ce0af955ed",
+      "name": "טופס",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        -672,
+        -64
+      ],
+      "webhookId": "6ea8805f-2fa7-4cf8-bf11-e929c97897ff"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b97aa48b-0bf9-437e-8a1a-5522b310549d",
+              "name": "full_name",
+              "value": "={{ $json.body.full_name }}",
+              "type": "string"
+            },
+            {
+              "id": "3bc7dc15-8e9a-4095-9395-526cec99d448",
+              "name": "phone",
+              "value": "={{ $json.body.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "b6a8f5f4-d66f-4b13-a62f-2ac8d8479816",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "b187dec0-e4c3-4101-9f29-0208f94e9de9",
+              "name": "class_type",
+              "value": "={{ $json.body.class_type }}",
+              "type": "string"
+            },
+            {
+              "id": "b8ef633d-9c6a-4a9d-b832-24555d631ef3",
+              "name": "preferred_date",
+              "value": "={{ $json.body.preferred_date }} {{ $json.body.preferred_time }}",
+              "type": "string"
+            },
+            {
+              "id": "e7ae78a2-6e04-4ff6-9308-ef6d6b478088",
+              "name": "source",
+              "value": "={{ $json.body.source }}",
+              "type": "string"
+            },
+            {
+              "id": "f3f2e029-91bb-4f6e-a487-20208f499118",
+              "name": "submitted_at",
+              "value": "={{ $json.body.submitted_at }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eaa7af27-fef6-4b4a-8176-ef0f38aef321",
+      "name": "info",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -464,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appwVcEdOJLl74YgB",
+          "mode": "list",
+          "cachedResultName": "power_studio",
+          "cachedResultUrl": "https://airtable.com/appwVcEdOJLl74YgB"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblQDYDXZ2KPTHSPV",
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "https://airtable.com/appwVcEdOJLl74YgB/tblQDYDXZ2KPTHSPV"
+        },
+        "filterByFormula": "={{ \"DATETIME_FORMAT(SET_TIMEZONE({preferred_date}, 'Asia/Jerusalem'), 'YYYY-MM-DD HH') = '\" + $json.preferred_date.slice(0, 13) + \"'\" }}",
+        "options": {}
+      },
+      "id": "ce25436e-0b99-4868-b792-c49a54585e77",
+      "name": "search",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        -256
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "pogpdJeSIaT6ipfT",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "3390ae3a-0dd6-42ef-a0f8-f8a4ebc36012",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "count-assignment",
+              "name": "count",
+              "value": "={{ $json.data.filter(i => Object.keys(i).length > 0).length }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5c3776c1-415e-481f-ae36-e02927a8b2ec",
+      "name": "count",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        128,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "6d649f39-9c4a-4b37-bb91-143e9f24610f",
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 4,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d952d2db-0d60-4796-b11c-125826d6a361",
+      "name": "יש מקום",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        352,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appwVcEdOJLl74YgB",
+          "mode": "list",
+          "cachedResultName": "power_studio",
+          "cachedResultUrl": "https://airtable.com/appwVcEdOJLl74YgB"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblQDYDXZ2KPTHSPV",
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "https://airtable.com/appwVcEdOJLl74YgB/tblQDYDXZ2KPTHSPV"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "full_name": "={{ $('info').item.json.full_name }}",
+            "phone": "={{ $('info').item.json.phone }}",
+            "email": "={{ $('info').item.json.email }}",
+            "class_type": "={{ $('info').item.json.class_type }}",
+            "preferred_date": "={{ $('info').item.json.preferred_date }}",
+            "source": "={{ $('info').item.json.source }}",
+            "submitted_at": "={{ $('info').item.json.submitted_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "full_name",
+              "displayName": "full_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "class_type",
+              "displayName": "class_type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "יוגה",
+                  "value": "יוגה"
+                },
+                {
+                  "name": "פילטיס",
+                  "value": "פילטיס"
+                },
+                {
+                  "name": "HIIT",
+                  "value": "HIIT"
+                },
+                {
+                  "name": "אימון כח",
+                  "value": "אימון כח"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "preferred_date",
+              "displayName": "preferred_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "submitted_at",
+              "displayName": "submitted_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b4616eca-c89d-4a0a-820b-9f8851061272",
+      "name": "יצירת רשומה",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        -272
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "pogpdJeSIaT6ipfT",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "6e054e34-af88-4175-8213-63b5adb9c136",
+      "name": "התאריך נקבע",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1184,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "dd15cdb6557192f4b9455a64791d34805542b4dc89801c109b6a047a79f2605e@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "סטודיו כח"
+        },
+        "start": "={{ DateTime.fromFormat($('info').item.json.preferred_date, 'yyyy-MM-dd HH:mm', { zone: 'Asia/Jerusalem' }).toISO() }}",
+        "end": "={{ DateTime.fromFormat($('info').item.json.preferred_date, 'yyyy-MM-dd HH:mm', { zone: 'Asia/Jerusalem' }).plus({ hours: 1 }).toISO() }}",
+        "additionalFields": {
+          "summary": "={{ \"לקוח חדש - \"+ $('info').item.json.full_name + \" \" + $('info').item.json.phone}}"
+        }
+      },
+      "id": "29e2d178-90fd-4de0-98b8-feb64f29ac71",
+      "name": "form_cal",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        -96
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TY8aMYNRvcVFADIs",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 429
+        }
+      },
+      "id": "a077a6f4-66c1-43c2-b288-ab9874c2f731",
+      "name": "תאריך לא זמין",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mybot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e35f4f79-92cd-4143-a833-6b0055d8b4a7",
+      "name": "סוכן",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        -672,
+        256
+      ],
+      "webhookId": "0ffe6c3e-3a43-40af-ab03-e882289bb035"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "=\nהתאריך והשעה הנוכחיים (אזור זמן Asia/Jerusalem): {{ $now.setZone('Asia/Jerusalem').toFormat('cccc, yyyy-MM-dd HH:mm') }}\nהשתמשי בתאריך ובשעה הנוכחיים האלה כנקודת ייחוס לכל התייחסות לזמן (\"היום\", \"מחר\", \"השבוע\", \"עוד שעה\" וכו').\n\nאת \"מאיה\", העוזרת הדיגיטלית של סטודיו הכושר \"כוח\" בתל אביב.\n\n# תפקיד\nלענות למתאמנים ולמתעניינים על שיעורים, מנויים ושעות פעילות, ולעזור להם לבחור שיעור שמתאים להם.\n\n# מידע על הסטודיו\n- שעות פעילות: א'–ה' 06:00–22:00, ו' 07:00–14:00, שבת סגור.\n- שיעורים: פילאטיס, יוגה, HIIT, אימון כוח.\n- שיעור ניסיון ראשון – ללא עלות.\n\n# כללים\n1. עני תמיד בעברית, בגוף שני, בטון חם ומעודד.\n2. אם המשתמש אמר את שמו – פני אליו בשמו.\n3. אל תמציאי מחירים או מידע שלא מופיע כאן. אם אין מידע – הציעי לפנות לסטודיו.\n4. אל תתני ייעוץ רפואי. על כאבים או פציעה – המליצי להתייעץ עם רופא.\\\n5.בעת רישום לאתר, תדאגי שיהיה שם מלא, טלפון ומייל בנוסף לשאר הפרטים\n\n# פורמט\nעד 4 משפטים. סיימי בשאלה שמקדמת את השיחה.\n\nאל תעשה פעולות בעצמך, הפנה לסוכני משנה.\n\nרישום ליומן יהיה בעזרת הסוכן agent_cal\n\nשליחת מייל יהיה בעזרת הסוכן agent_email\n"
+        }
+      },
+      "id": "6db08084-323c-4446-9e5f-6601b9f6759a",
+      "name": "ceo",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -240,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-5-5",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 5.5"
+        },
+        "options": {}
+      },
+      "id": "860dba98-c0cb-4af9-b490-fdb793021634",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        -368,
+        464
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('סוכן').item.json.body.chatInput }}",
+        "contextWindowLength": 100
+      },
+      "id": "5169928a-86f4-4449-8ea0-fc4ca2d48399",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -224,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "AI agent for checking avibilty in calander and set up appoitment or delete them",
+        "text": "בדוק כמות פגישות לפי סוג השיעור ע״י שימוש בכלי check_free \nבמידה ויש 2 פגישות, בקש מהלקוח לקבוע תאריך אחר ולא תקבעי תאריך ביומן\nבמידה ויש מקום פנוי , קבעי את השעה ביומן בעזרת הכלי app\n",
+        "options": {}
+      },
+      "id": "27be7152-4795-4297-b81b-c839ff14d5a8",
+      "name": "agent_cal",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        96,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-5-5",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 5.5"
+        },
+        "options": {}
+      },
+      "id": "580caa76-b2c5-417b-84ab-a772818d1d91",
+      "name": "Anthropic Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        -16,
+        720
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "5c60f562-e762-4a32-af5c-4e7938854450",
+      "name": "Simple Memory1",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        128,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "dd15cdb6557192f4b9455a64791d34805542b4dc89801c109b6a047a79f2605e@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "סטודיו כח"
+        },
+        "start": "={{ $fromAI(\"startDate\",\"get the date and time from the chat\") }}",
+        "end": "={{ $fromAI(\"endDate\",\"add one hour to the date time from the chat\")}}",
+        "additionalFields": {
+          "description": "new client",
+          "summary": "={{ \"לקוח חדש - \" + $fromAI(\"lessonType\", \"the type of lesson the client chooise (e.g. יוגה, פילאטיס, HIIT, אימון כוח), in hebrew\") }}"
+        }
+      },
+      "id": "edabd494-7c3a-43f1-a501-f902c4c924ff",
+      "name": "app",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        720
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TY8aMYNRvcVFADIs",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "dd15cdb6557192f4b9455a64791d34805542b4dc89801c109b6a047a79f2605e@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "סטודיו כח"
+        },
+        "timeMin": "={{ $fromAI(\"slotStart\", \"date and time that user want to set a lesson\") }}",
+        "timeMax": "={{ $fromAI(\"slotEnd\", \"date and time that user want to set a lesson one hour after time\") }}",
+        "options": {}
+      },
+      "id": "ccff029e-0ac6-4bc2-a1e7-f7e4f2e2cd15",
+      "name": "check_free",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        720
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TY8aMYNRvcVFADIs",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "ai agent for sending emails to the client",
+        "text": "send an email to the client which showing him the date, time and lesson type",
+        "options": {}
+      },
+      "id": "c248c7d5-f4f0-41b5-b2eb-e83fdd96ea2a",
+      "name": "agent_email",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        576,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-5-5",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 5.5"
+        },
+        "options": {}
+      },
+      "id": "72f45b1a-8e9c-49ef-8ce7-f2e7a862f695",
+      "name": "Anthropic Chat Model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        544,
+        720
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "09c68612-0b6e-469c-890b-8cf3f0918b20",
+      "name": "Simple Memory3",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        672,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "message": "=The agent wants to run this tool send_client_email\n\nInput:\n",
+        "sendTo": "mindalizeev@gmail.com",
+        "subject": "approve client free lesson",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "id": "d6aa97d0-266f-4cab-a061-a43535a86b7d",
+      "name": "approve_email",
+      "type": "n8n-nodes-base.gmailHitlTool",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        736
+      ],
+      "webhookId": "5a6768ab-afe0-46a6-b8fd-efa324bc40fe",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gHtjqRop6dYsT7LR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1h4tJRbSqokkvng4r1ADweGjCixHMJiPtLb6sIch1p8s",
+          "mode": "list",
+          "cachedResultName": "chat",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1h4tJRbSqokkvng4r1ADweGjCixHMJiPtLb6sIch1p8s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "chat_logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1h4tJRbSqokkvng4r1ADweGjCixHMJiPtLb6sIch1p8s/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "outgoing": "={{ $json.output }}",
+            "incoming": "={{ $('סוכן').item.json.body.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "incoming",
+              "displayName": "incoming",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "outgoing",
+              "displayName": "outgoing",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "fe78589e-a1a0-40c8-aa88-a9f31edc9977",
+      "name": "append log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        160,
+        256
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2978jrXEY0H2pxUX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "8c88e039-ec73-4e2f-b7ac-b9118df610be",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        384,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "dd15cdb6557192f4b9455a64791d34805542b4dc89801c109b6a047a79f2605e@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "סטודיו כח"
+        },
+        "timeMin": "={{ DateTime.fromFormat($('info').item.json.preferred_date, 'yyyy-MM-dd HH:mm', { zone: 'Asia/Jerusalem' }).toISO() }}",
+        "timeMax": "={{ DateTime.fromFormat($('info').item.json.preferred_date, 'yyyy-MM-dd HH:mm', { zone: 'Asia/Jerusalem' }).plus({ hours: 1 }).toISO() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        -64
+      ],
+      "id": "4e780494-3f54-4965-aaaf-f38c87f91ea6",
+      "name": "form_get_cal",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TY8aMYNRvcVFADIs",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "mindalizeev@gmail.com",
+        "subject": "approve your appoitment",
+        "message": "you sechduled to : bla bla",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "אישור התור",
+            "disapproveLabel": "ביטול התור"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        -192
+      ],
+      "id": "c8ac859c-4f56-4a1e-92a7-b6417e974000",
+      "name": "Send message and wait for response",
+      "webhookId": "397eb446-3aa0-4701-af5d-d71f53fff725",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gHtjqRop6dYsT7LR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "1707fc09-ccbd-4540-bca2-bc41a6716efd",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        720,
+        -192
+      ],
+      "id": "bdf68b7b-8f5d-4790-ada1-eb6a52365ac3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 450
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1168,
+        208
+      ],
+      "id": "71769ab1-d249-4a04-87e3-1fe253a0c15c",
+      "name": "שליחת הודעת ביטול"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1_Zuf5BbdJ-HZAFAaws_sNB6lrzZ7XC7gNnjNrDgosh4",
+          "mode": "list",
+          "cachedResultName": "סטודיו כח",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_Zuf5BbdJ-HZAFAaws_sNB6lrzZ7XC7gNnjNrDgosh4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ביטולים",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_Zuf5BbdJ-HZAFAaws_sNB6lrzZ7XC7gNnjNrDgosh4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $('info').item.json.full_name }}",
+            "phone": "={{ $('info').item.json.phone }}",
+            "email": "={{ $('info').item.json.email }}",
+            "lesson": "={{ $('info').item.json.class_type }}",
+            "date": "={{ $('info').item.json.preferred_date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lesson",
+              "displayName": "lesson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        208
+      ],
+      "id": "fedf30ca-a17c-4a67-bab5-983e75bc06ce",
+      "name": "תיעוד",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2978jrXEY0H2pxUX",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "טופס": {
+      "main": [
+        [
+          {
+            "node": "info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "info": {
+      "main": [
+        [
+          {
+            "node": "form_get_cal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "count": {
+      "main": [
+        [
+          {
+            "node": "יש מקום",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "יש מקום": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "תאריך לא זמין",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "יצירת רשומה": {
+      "main": [
+        [
+          {
+            "node": "התאריך נקבע",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "form_cal": {
+      "main": [
+        [
+          {
+            "node": "התאריך נקבע",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "סוכן": {
+      "main": [
+        [
+          {
+            "node": "ceo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ceo": {
+      "main": [
+        [
+          {
+            "node": "append log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ceo",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "ceo",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agent_cal": {
+      "ai_tool": [
+        [
+          {
+            "node": "ceo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "agent_cal",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "agent_cal",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "app": {
+      "ai_tool": [
+        [
+          {
+            "node": "agent_cal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_free": {
+      "ai_tool": [
+        [
+          {
+            "node": "agent_cal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agent_email": {
+      "ai_tool": [
+        [
+          {
+            "node": "ceo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "agent_email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "agent_email",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "approve_email": {
+      "ai_tool": [
+        [
+          {
+            "node": "agent_email",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "append log": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "form_get_cal": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "יצירת רשומה",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "form_cal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "תיעוד",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "תיעוד": {
+      "main": [
+        [
+          {
+            "node": "שליחת הודעת ביטול",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "a342f50ba57d936432eb38fc9fe2087632a48e2adab31b69690328681314c908"
+  }
+}
